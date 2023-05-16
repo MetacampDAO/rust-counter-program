@@ -2,7 +2,7 @@ Set up your development environment (30 min)
 -> Guide: https://www.notion.so/metacamp-community/Introduction-Bootcamp-and-Solana-93ae1a235a964ecf9344dd06abdc90e5?pvs=4#d204cc6f46194ab1b8483c05bfcf14af
 
 
-Initiate Rust program: counter_program
+Initiate Rust program: rust_counter_program
 ```
 
 // Initialize basic Rust backbone
@@ -74,10 +74,10 @@ Compile your Rust code into byte code, and deploy to the Solana blockchain
 cargo build-sbf
 
 // Deploy byte code (require SOL for tx and deposit fee)
-solana program deploy ./target/deploy/counter_program.so
+solana program deploy ./target/deploy/rust_counter_program.so
 
 // Find program keypair 
-cat ./target/deploy/counter_program-keypair.json
+cat ./target/deploy/rust_counter_program-keypair.json
 
 ```
 
