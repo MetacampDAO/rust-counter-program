@@ -1,5 +1,5 @@
 [package]
-name = "counter_program"
+name = "rust_counter_program"
 version = "0.1.0"
 edition = "2021"
 
@@ -10,5 +10,5 @@ borsh = "0.10.3"
 solana-program = "1.15.2"
 
 [lib]
-name = "counter_program"
+name = "rust_counter_program"
 crate-type = ["cdylib", "lib"]
