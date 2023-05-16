@@ -6,8 +6,8 @@ Initiate Rust program: rust_counter_program
 ```
 
 // Initialize basic Rust backbone
-cargo init counter_program --lib
-cd counter_program
+cargo init rust_counter_program --lib
+cd rust_counter_program
 
 ```
 
@@ -24,7 +24,7 @@ cargo add borsh
 Open Cargo.toml and add configurations settings
 ```
 [lib]
-name = "counter_program"
+name = "rust_counter_program"
 crate-type = ["cdylib", "lib"]
 ```
 
