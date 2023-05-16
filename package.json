@@ -1,0 +1,19 @@
+{
+  "name": "counter_client",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {
+    "@solana/web3.js": "^1.42.0",
+    "borsh": "^0.7.0",
+    "dotenv": "^16.0.3",
+    "fs": "^0.0.1-security"
+  },
+  "scripts": {
+    "start": "ts-node client/index.ts"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
