@@ -20,7 +20,7 @@ async function greet() {
 
   // Set up a connection to blockchain cluster
   const cluster = 'devnet'
-  const connection = new web3.Connection(web3.clusterApiUrl(cluster), 'finalized')
+  const connection = new web3.Connection(web3.clusterApiUrl(cluster), 'confirmed')
 
   // Create user keypair and airdrop SOL if needed
   const userKeypair = initializeSolSignerKeypair()

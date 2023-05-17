@@ -51,8 +51,8 @@ pub fn process_instruction(
         return Err(ProgramError::InvalidArgument);
     }
 
-    let new_greeting_account = greeting_account.clone();
-    let borrowed_lamports = new_greeting_account.try_borrow_lamports().unwrap();
+    // Get and borrow lamports from greeting account
+    let borrowed_lamports = greeting_account.try_borrow_lamports().unwrap();
     
 
     if *borrowed_lamports == &mut 0 {
