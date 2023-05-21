@@ -1,8 +1,15 @@
 Set up your development environment (30 min)
 -> Guide: https://www.notion.so/metacamp-community/Introduction-Bootcamp-and-Solana-93ae1a235a964ecf9344dd06abdc90e5?pvs=4#d204cc6f46194ab1b8483c05bfcf14af
 
+If you have cloned this repository, you can build the program as is, on your terminal run the below code. NOTE: After each time you build your Solana program, the below command will output the build path of your compiled program's .so file and the default keyfile that will be used for the program's address.
+```
+cd PATH/TO/THE/RUST-COUNTER-PROGRAM
+cargo build-bpf
+```
+Using the Solana CLI, you can deploy your program to your currently selected cluster:
+solana program deploy ./target/deploy/hello_world.so
 
-Initiate Rust program: rust_counter_program
+To build the program from **scratch** initiate Rust program: rust_counter_program
 ```
 
 // Initialize basic Rust backbone
