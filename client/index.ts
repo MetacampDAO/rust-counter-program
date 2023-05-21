@@ -24,7 +24,7 @@ async function greet() {
 
   // Create user keypair and airdrop SOL if needed
   const userKeypair = initializeSolSignerKeypair()
-  await airdropSolIfNeeded(userKeypair, connection)
+  await airdropSolIfNeeded(connection, userKeypair.publicKey, 2, 0.05)
 
 
   const lamports = await connection.getMinimumBalanceForRentExemption(
