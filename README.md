@@ -6,8 +6,11 @@ If you have cloned this repository, you can build the program as is, on your ter
 cd PATH/TO/THE/RUST-COUNTER-PROGRAM
 cargo build-bpf
 ```
+
 Using the Solana CLI, you can deploy your program to your currently selected cluster:
+```
 solana program deploy ./target/deploy/hello_world.so
+```
 
 To build the program from **scratch** initiate Rust program: rust_counter_program
 ```
