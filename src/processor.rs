@@ -32,29 +32,41 @@ pub fn process_instruction(
 
     match instruction {
 
-      // 0: InitializeCounter
-      ProgramInstruction::InitializeCounter => {
-        msg!("Instruction: InitializeCounter");
-        process_initialize_counter(program_id, accounts)
-      }
+        // 0: InitializeCounter
+        ProgramInstruction::InitializeCounter => {
+            msg!("Instruction: InitializeCounter");
+            process_initialize_counter(program_id, accounts)
+        }
 
-      // 1: IncreaseCounter
-      ProgramInstruction::IncreaseCounter { increase_by } => {
-        msg!("Instruction: IncreaseCounter");
-        process_increase_counter(program_id, accounts, increase_by)
-      }
+        // 1: IncreaseCounter
+        ProgramInstruction::IncreaseCounter { increase_by } => {
+            msg!("Instruction: IncreaseCounter");
+            process_increase_counter(program_id, accounts, increase_by)
+        }
 
-      // 2: Delegate
-      ProgramInstruction::Delegate => {
-        msg!("Instruction: Delegate");
-        process_delegate(program_id, accounts)
-      }
+        // 2: Delegate
+        ProgramInstruction::Delegate => {
+            msg!("Instruction: Delegate");
+            process_delegate(program_id, accounts)
+        }
 
-      // 3: CommitAndUndelegate
-      ProgramInstruction::CommitAndUndelegate => {
-        msg!("Instruction: CommitAndUndelegate");
-        process_commit_and_undelegate(program_id, accounts)
-      }
+        // 3: CommitAndUndelegate
+        ProgramInstruction::CommitAndUndelegate => {
+            msg!("Instruction: CommitAndUndelegate");
+            process_commit_and_undelegate(program_id, accounts)
+        }
+
+        // 4: Commit
+        ProgramInstruction::Commit => {
+            msg!("Instruction: Commit");
+            Ok(())
+        }
+
+        // 5: Undelegate
+        ProgramInstruction::Undelegate => {
+            msg!("Instruction: Undelegate");
+            Ok(())
+        }
       
     }
 }

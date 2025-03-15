@@ -9,6 +9,8 @@ pub enum ProgramInstruction {
     },
     Delegate,
     CommitAndUndelegate,
+    Commit,
+    Undelegate
 }
 
 #[derive(BorshDeserialize)]
@@ -31,6 +33,8 @@ impl ProgramInstruction {
             },
             2 => Self::Delegate,
             3 => Self::CommitAndUndelegate,
+            4 => Self::Commit,
+            5 => Self::Undelegate,
             _ => return Err(ProgramError::InvalidInstructionData),
         })
     }
