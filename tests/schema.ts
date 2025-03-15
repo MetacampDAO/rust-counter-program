@@ -8,7 +8,7 @@ export class Counter {
   }
   
 export const CounterSchema = new Map([
-[Counter, { kind: "struct", fields: [["count", "u64"]] }],
+  [Counter, { kind: "struct", fields: [["count", "u64"]] }],
 ]);
 
 export enum CounterInstruction {

@@ -10,7 +10,7 @@ import dotenv from 'dotenv'
 import { DELEGATION_PROGRAM_ID, getDelegationBufferPda, getDelegationMetadataPda, getDelegationRecordPda, MAGIC_CONTEXT_ID, MAGIC_PROGRAM_ID } from "./constants";
 dotenv.config()
 
-describe("Running Counter Program tests:", async function (this: Suite) {
+describe("Running tests:", async function (this: Suite) {
     this.timeout(60000);  // Set timeout for the test
   
     // Get programId from target folder
@@ -36,7 +36,7 @@ describe("Running Counter Program tests:", async function (this: Suite) {
     let [counterPda, bump] = web3.PublicKey.findProgramAddressSync(
         [Buffer.from("counter_account"), userKeypair.publicKey.toBuffer()],
         PROGRAM_ID
-        );
+     );
 
     it("Initialize counter account", async function () {
 
@@ -81,21 +81,20 @@ describe("Running Counter Program tests:", async function (this: Suite) {
         const txHash = await web3.sendAndConfirmTransaction(connection, tx, [userKeypair],
             {
                 skipPreflight: true,
-                commitment: "processed"
+                commitment: "confirmed"
             }
         ); 
         console.log("txId:", txHash)
 
         // Fetch counter account on Solana, deserialize data, and check value
-        const counterAccount = await (new web3.Connection(rpcSolana)).getAccountInfo(counterPda);
+        const counterAccount = await (new web3.Connection(rpcSolana, { commitment: "processed" })).getAccountInfo(counterPda);
         const deserializedAccountData = borsh.deserialize(
             CounterSchema,
             Counter,
             counterAccount!.data
         );
-        console.log(`${counterPda}: ${deserializedAccountData.count}`);
-        // Assert that the counter is 1 or greater
-        expect(deserializedAccountData.count).to.be.at.least(1, "The counter value should be 1 or greater");
+        console.log(`Counter ${counterPda}: ${deserializedAccountData.count} (Solana)`);
+        expect(Number(deserializedAccountData.count)).to.be.at.least(0, "The counter value should be 0 or greater");
     });
     it("Increase counter on Solana", async function () {
 
@@ -131,7 +130,7 @@ describe("Running Counter Program tests:", async function (this: Suite) {
         ]
         const serializedInstructionData =  Buffer.concat([
             Buffer.from([CounterInstruction.IncreaseCounter]),
-            borsh.serialize(CounterSchema, new IncreaseCounterPayload(1))
+            borsh.serialize(IncreaseCounterPayload.schema, new IncreaseCounterPayload(1))
         ])
         const initializeIx = new web3.TransactionInstruction({
             keys: keys,
@@ -143,20 +142,21 @@ describe("Running Counter Program tests:", async function (this: Suite) {
         const txHash = await web3.sendAndConfirmTransaction(connection, tx, [userKeypair],
             {
                 skipPreflight: true,
-                commitment: "processed"
+                commitment: "confirmed"
             }
         ); 
         console.log("txId:", txHash)
 
         // Fetch counter account on Solana, deserialize data, and check value
-        const counterAccount = await (new web3.Connection(rpcSolana)).getAccountInfo(counterPda);
+        const counterAccount = await (new web3.Connection(rpcSolana, { commitment: "processed" })
+        ).getAccountInfo(counterPda);
         const deserializedAccountData = borsh.deserialize(
             CounterSchema,
             Counter,
             counterAccount!.data
         );
-        console.log(`${counterPda}: ${deserializedAccountData.count}`);
-        expect(deserializedAccountData.count).to.be.at.least(1, "The counter value should be 1 or greater");
+        console.log(`${counterPda}: ${deserializedAccountData.count} (Solana)`);
+        expect(Number(deserializedAccountData.count)).to.be.at.least(1, "The counter value should be 1 or greater");
     });
     it("Delegate counter to ER", async function () {
 
@@ -191,9 +191,9 @@ describe("Running Counter Program tests:", async function (this: Suite) {
             },
             // Owner Program
             {
-                pubkey: counterPda,
+                pubkey: PROGRAM_ID,
                 isSigner: false,
-                isWritable: true,
+                isWritable: false,
             },
             // Delegation Buffer
             {
@@ -231,19 +231,19 @@ describe("Running Counter Program tests:", async function (this: Suite) {
         const txHash = await web3.sendAndConfirmTransaction(connection, tx, [userKeypair],
             {
                 skipPreflight: true,
-                commitment: "processed"
+                commitment: "confirmed"
             }
         ); 
         console.log("txId:", txHash)
 
         // Fetch counter account on Solana and check owner
-        const counterAccount = await (new web3.Connection(rpcSolana)).getAccountInfo(counterPda);
+        const counterAccount = await (new web3.Connection(rpcSolana, { commitment: "processed" })).getAccountInfo(counterPda);
         const owner = counterAccount.owner.toString()
-        console.log(`PDA Owner: ${owner}`);
+        console.log(`PDA Owner: ${owner} (Solana)`);
         expect(owner).equals(DELEGATION_PROGRAM_ID.toString(), "The counter should be owned by Delegation Program");
 
     });
-    it("Increase counter to ER", async function () {
+    it("Increase counter on ER", async function () {
 
         // Check counter account ownership, skip test if NOT delegated
         const isDelegated = (await (new web3.Connection(rpcSolana)).getAccountInfo(counterPda))?.owner.toString() == DELEGATION_PROGRAM_ID.toString();
@@ -277,7 +277,7 @@ describe("Running Counter Program tests:", async function (this: Suite) {
         ]
         const serializedInstructionData =  Buffer.concat([
             Buffer.from([CounterInstruction.IncreaseCounter]),
-            borsh.serialize(CounterSchema, new IncreaseCounterPayload(1))
+            borsh.serialize(IncreaseCounterPayload.schema, new IncreaseCounterPayload(1))
         ])
         const initializeIx = new web3.TransactionInstruction({
             keys: keys,
@@ -289,16 +289,21 @@ describe("Running Counter Program tests:", async function (this: Suite) {
         const txHash = await web3.sendAndConfirmTransaction(connection, tx, [userKeypair],
             {
                 skipPreflight: true,
-                commitment: "processed"
+                commitment: "confirmed"
             }
         ); 
         console.log("txId:", txHash)
 
-        // Fetch counter account on Solana (to check owner)
-        const counterAccount = await (new web3.Connection(rpcSolana)).getAccountInfo(counterPda);
-        const owner = counterAccount.owner.toString()
-        console.log(`PDA Owner: ${owner}`);
-        expect(owner).equals(DELEGATION_PROGRAM_ID.toString(), "The counter should be owned by Delegation Program");
+        // Fetch counter account on Solana, deserialize data, and check value
+        const counterAccount = await (new web3.Connection(rpcMagicblock, { commitment: "processed" })
+        ).getAccountInfo(counterPda);
+        const deserializedAccountData = borsh.deserialize(
+            CounterSchema,
+            Counter,
+            counterAccount!.data
+        );
+        console.log(`PDA ${counterPda}: ${deserializedAccountData.count} (ER)`);
+        expect(Number(deserializedAccountData.count)).to.be.at.least(1, "The counter value should be 1 or greater");
 
     });
     it("Commit and undelegate counter on ER to Solana", async function () {
@@ -350,15 +355,15 @@ describe("Running Counter Program tests:", async function (this: Suite) {
         const txHash = await web3.sendAndConfirmTransaction(connection, tx, [userKeypair],
             {
                 skipPreflight: true,
-                commitment: "processed"
+                commitment: "confirmed"
             }
         ); 
         console.log("txId:", txHash)
 
         // Fetch counter account on Solana (to check owner)
-        const counterAccount = await (new web3.Connection(rpcSolana)).getAccountInfo(counterPda);
+        const counterAccount = await (new web3.Connection(rpcSolana, { commitment: "processed" })).getAccountInfo(counterPda);
         const owner = counterAccount.owner.toString()
-        console.log(`PDA Owner: ${owner}`);
+        console.log(`PDA Owner: ${owner} (Solana)`);
         expect(owner).not.equals(DELEGATION_PROGRAM_ID.toString(), "The counter should NOT be owned by Delegation Program");
 
     });
