@@ -13,7 +13,8 @@ use solana_program::{
     sysvar::Sysvar,
 };
 
-use ephemeral_rollups_sdk::cpi:: { delegate_account, undelegate_account, DelegateAccounts, DelegateConfig };
+use ephemeral_rollups_sdk::cpi::{delegate_account, undelegate_account, DelegateAccounts, DelegateConfig};
+use ephemeral_rollups_sdk::ephem::{commit_and_undelegate_accounts};
 
 use crate::{
     instruction::ProgramInstruction,
@@ -201,19 +202,12 @@ pub fn process_delegate(
     Ok(())
 }
 
-pub fn process_commit_and_undelegate(
-    program_id: &Pubkey,
-    accounts: &[AccountInfo],
-) -> ProgramResult {
 
-    Ok(())
-}
 
 pub fn process_undelegate(
     program_id: &Pubkey,
     accounts: &[AccountInfo],
 ) -> ProgramResult {
-
     // Get accounts
     let account_info_iter = &mut accounts.iter();
     let delegated_pda = next_account_info(account_info_iter)?;
@@ -226,6 +220,7 @@ pub fn process_undelegate(
     let seed_2 = initializer.key.to_bytes().to_vec(); 
     let pda_seeds: Vec<Vec<u8>> = vec![seed_1, seed_2];
     
+    // CPI on Solana
     undelegate_account(
         delegated_pda,
         program_id,
@@ -238,3 +233,30 @@ pub fn process_undelegate(
     Ok(())
 }
 
+pub fn process_commit_and_undelegate(
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
+) -> ProgramResult {
+    // Get accounts
+    let account_info_iter = &mut accounts.iter();
+    let initializer = next_account_info(account_info_iter)?;
+    let counter_account = next_account_info(account_info_iter)?;
+    let magic_program = next_account_info(account_info_iter)?;
+    let magic_context = next_account_info(account_info_iter)?;
+
+    // Signer should be the same as the initializer
+    if !initializer.is_signer {
+        msg!("Initializer {} should be the signer", initializer.key);
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+    
+    // Commit and undelegate counter_account on ER
+    commit_and_undelegate_accounts(
+        initializer,
+        vec![counter_account],
+        magic_context,
+        magic_program,
+    );
+
+    Ok(())
+}
