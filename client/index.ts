@@ -86,7 +86,6 @@ async function greet() {
   );
 
 
- 
 
   console.log(
     `On-chain account ${greetingPda}'s data field 'counter': ${deserializedAccountData.counter} \n`

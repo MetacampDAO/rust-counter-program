@@ -1,21 +1,36 @@
 // instruction.rs
 use solana_program::{ program_error::ProgramError };
+use borsh::{BorshDeserialize};
 
-// Define instructions
-pub enum GreetInstruction {
-    Initialize,
-    Greet,
+pub enum ProgramInstruction {
+    InitializeCounter,
+    IncreaseCounter {
+        increase_by: u64
+    },
+    Delegate,
+    CommitAndUndelegate,
 }
 
-// Implement byte unpacking function for instruction
-impl GreetInstruction {
+#[derive(BorshDeserialize)]
+struct IncreaseCounterPayload {
+    increase_by: u64,
+}
+
+impl ProgramInstruction {
     pub fn unpack(input: &[u8]) -> Result<Self, ProgramError> {
         let (&variant, _rest) = input
             .split_first()
             .ok_or(ProgramError::InvalidInstructionData)?;
         Ok(match variant {
-            0 => Self::Initialize,
-            1 => Self::Greet,
+            0 => Self::InitializeCounter,
+            1 => {
+                let payload = IncreaseCounterPayload::try_from_slice(_rest).unwrap();
+                Self::IncreaseCounter {
+                    increase_by: payload.increase_by
+                }
+            },
+            2 => Self::Delegate,
+            3 => Self::CommitAndUndelegate,
             _ => return Err(ProgramError::InvalidInstructionData),
         })
     }
